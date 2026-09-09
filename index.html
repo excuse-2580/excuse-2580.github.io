@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>黎夜 🐾 的个人主页</title>
+<!--[if lte IE 8]>
+<style>
+  .card, .game { border: 1px solid #ccc; }
+  .avatar { background: #ff8fab; }
+</style>
+<![endif]-->
+<style>
+  :root{
+    --pink:#ff9a9e; --purple:#a18cd1; --bg1:#fff0f5; --bg2:#f3e7ff;
+    --card:#ffffffee; --text:#4a3f5c; --sub:#8a7fa8; --line:#f0e3f5;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));
+    color:var(--text); line-height:1.7; padding:14px; font-size:15px;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:560px; margin:0 auto;}
+  header{
+    text-align:center; padding:26px 16px 20px;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    border-radius:22px; color:#fff; margin-bottom:16px;
+    box-shadow:0 6px 20px #d8b4e040; position:relative; overflow:hidden;
+  }
+  .paw{position:absolute; opacity:.18; font-size:30px;}
+  header .paw:nth-child(1){top:10px;left:16px;transform:rotate(-20deg);}
+  header .paw:nth-child(2){bottom:12px;right:18px;transform:rotate(25deg);}
+  .avatar{
+    width:84px;height:84px;margin:0 auto 10px;border-radius:50%;
+    background:rgba(255,255,255,.28); display:flex; align-items:center;
+    justify-content:center; font-size:44px; cursor:pointer;
+    border:3px solid #fff; transition:transform .2s;
+  }
+  .avatar:active{transform:scale(.92);}
+  h1{font-size:21px; font-weight:800; letter-spacing:.5px;}
+  .tags{margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; justify-content:center;}
+  .tag{background:rgba(255,255,255,.26); padding:3px 12px; border-radius:14px; font-size:12.5px;}
+  .card{
+    background:var(--card); backdrop-filter:blur(4px);
+    border:1px solid var(--line); border-radius:18px;
+    padding:16px 16px 14px; margin-bottom:14px;
+    box-shadow:0 3px 12px #cbb6e020;
+  }
+  .card h2{
+    font-size:16px; margin-bottom:10px; padding-bottom:7px;
+    border-bottom:2px dashed var(--line); display:flex; align-items:center; gap:6px;
+  }
+  .card h2 .ic{font-size:17px;}
+  p{margin-bottom:8px;}
+  .muted{color:var(--sub); font-size:13px;}
+  ul{list-style:none; padding-left:4px;}
+  li{padding:4px 0 4px 18px; position:relative; font-size:14px;}
+  li::before{content:"•"; color:var(--pink); position:absolute; left:2px; font-weight:700;}
+  li .note{color:var(--sub); font-size:12.5px;}
+  .games{display:flex; flex-direction:column; gap:8px;}
+  .game{
+    border:1px solid var(--line); border-radius:12px; padding:9px 12px;
+    background:#fff; font-size:14px;
+  }
+  .game b{color:var(--purple);}
+  .game .note{display:block; color:var(--sub); font-size:12.5px; margin-top:2px;}
+  .contact{display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
+  .contact a{
+    flex:1 1 auto; text-align:center; text-decoration:none; color:#fff;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    padding:9px 10px; border-radius:12px; font-size:13.5px; font-weight:600;
+  }
+  .warn{background:#fff5f7; border-color:#ffd6e0;}
+  .warn li::before{content:"⚠"; color:#ff6b81;}
+  footer{text-align:center; color:var(--sub); font-size:12px; padding:12px 0 6px;}
+  footer .heart{color:var(--pink);}
+  /* 渐进增强：不支持这些属性的老浏览器会自动忽略 */
+  @supports not (backdrop-filter:blur(4px)){ .card{background:#fffef9;} }
+</style>
+</head>
+<body class="no-js">
+
+<div class="wrap">
+
+  <header>
+    <span class="paw">🐾</span><span class="paw">🐾</span>
+    <div class="avatar" id="avatar" title="点我换一只~">🐾</div>
+    <h1>黎夜 <span class="muted" style="color:#fff">furry</span></h1>
+    <div class="tags">
+      <span class="tag">♂ 男</span>
+      <span class="tag">🦀 巨蟹座 · 7.10</span>
+      <span class="tag">📍 山东枣庄峄城</span>
+      <span class="tag">🐾 furry</span>
+    </div>
+  </header>
+
+  <!-- 关于我 -->
+  <section class="card">
+    <h2><span class="ic">🌱</span>关于我</h2>
+    <p>喜欢折腾手机——<b>Shizuku 会用</b>，Root 和刷机目前还在学习中 📱；对数码产品挺感兴趣，愿望是凑齐<b>荣耀全家桶</b>~</p>
+    <p class="muted">当然啦，我也是 furry 🐾 性格比较温柔、善良，不过我是<b>玻璃心</b>，别太凶我哦 😢</p>
+  </section>
+
+  <!-- 游戏 -->
+  <section class="card">
+    <h2><span class="ic">🎮</span>玩过的游戏</h2>
+    <div class="games">
+      <div class="game"><b>崩坏：星穹铁道</b><span class="note">小萌新！</span></div>
+      <div class="game"><b>罗布乐思（Roblox）</b><span class="note">挺好玩的</span></div>
+      <div class="game"><b>三角洲行动</b><span class="note">太好玩了，不知道爆率高不高</span></div>
+      <div class="game"><b>使命召唤手游</b><span class="note">使命"新手"</span></div>
+      <div class="game"><b>火影忍者</b><span class="note">最近没咋玩</span></div>
+      <div class="game"><b>阴阳师</b><span class="note">淡游，号都注销了</span></div>
+      <div class="game"><b>迷你世界</b><span class="note">中立玩家，别因为我玩 MC 和迷你引战哈</span></div>
+      <div class="game"><b>穿越火线：枪战王者</b><span class="note">手感一般</span></div>
+      <div class="game"><b>荒野乱斗 / 皇室战争</b><span class="note">都挺好玩</span></div>
+      <div class="game"><b>蛋仔派对</b><span class="note">两个号——B站服「煤炭Owo」（推荐加这个），官服「黎夜furry」</span></div>
+      <div class="game"><b>极品飞车：集结</b><span class="note">微活</span></div>
+      <div class="game"><b>巅峰极速</b><span class="note">等网易把安装包内存降下来再说吧</span></div>
+      <div class="game"><b>Steam</b><span class="note">用手机云电脑玩的</span></div>
+      <div class="game"><b>坦克世界闪击战</b><span class="note">坦闪</span></div>
+      <div class="game"><b>光遇</b></div>
+      <div class="game"><b>宝可梦大集结</b><span class="note">感觉一般</span></div>
+      <div class="game"><b>洛克王国：世界</b><span class="note">还行</span></div>
+      <div class="game"><b>音游：phira / mlitnm</b><span class="note">说实话有点不好玩</span></div>
+      <div class="game"><b>我的世界</b><span class="note">基岩版和网易都玩，喜欢加各种资源包，想玩纯生存也可以~</span></div>
+    </div>
+  </section>
+
+  <!-- 雷点 -->
+  <section class="card warn">
+    <h2><span class="ic">⚠️</span>雷点（直接避雷）</h2>
+    <ul>
+      <li>阴阳人</li>
+      <li>聊 h</li>
+    </ul>
+    <h2 style="margin-top:12px"><span class="ic">🙏</span>你可能雷</h2>
+    <ul>
+      <li>经常发动态 / 发没啥意义的动态</li>
+      <li>消息不回</li>
+      <li>躺列</li>
+    </ul>
+  </section>
+
+  <!-- 找我玩 -->
+  <section class="card">
+    <h2><span class="ic">💬</span>找我玩</h2>
+    <p>蛋仔派对推荐加 <b>B站服「煤炭Owo」</b>，官服是「黎夜furry」~</p>
+    <div class="contact">
+      <a href="javascript:void(0)" onclick="copy('煤炭Owo')">📋 复制 B站服 ID</a>
+      <a href="javascript:void(0)" onclick="copy('黎夜furry')">📋 复制 官服 ID</a>
+    </div>
+  </section>
+
+  <footer>
+    Made with <span class="heart">♥</span> by 黎夜 · 🐾 温柔待人哦~
+  </footer>
+
+</div>
+
+<script>
+  // 渐进增强：现代浏览器才执行，老安卓自动跳过，不影响显示
+  document.body.className = '';
+  var avatars = ['🐾','🦊','🐰','🐼','🐧','🐱','🐶','🦝'];
+  var i = 0;
+  var el = document.getElementById('avatar');
+  if(el){ el.addEventListener('click', function(){
+    i = (i + 1) % avatars.length;
+    el.textContent = avatars[i];
+  });}
+  function copy(t){
+    if(navigator.clipboard){ navigator.clipboard.writeText(t); }
+    else{ var ta = document.createElement('textarea'); ta.value = t;
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); }
+    alert('已复制：' + t);
+  }
+</script>
+</body>
+</html>
