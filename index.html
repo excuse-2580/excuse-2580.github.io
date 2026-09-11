@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>小夜的扩列条</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --ink: #2a2a35;
+    --ink-soft: #5f5f6e;
+    --ink-faint: #8b8b9a;
+    --violet: #6d5ae0;
+    --violet-deep: #4f3bbf;
+    --bg-1: #f4f1ff;
+    --bg-2: #e9f3ff;
+    --card: #ffffff;
+    --line: #eceaf6;
+  }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    line-height: 1.65;
+    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    min-height: 100vh;
+    padding: 20px 16px 120px;
+  }
+
+  .card {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 12px 40px rgba(90, 74, 180, 0.10);
+    overflow: hidden;
+  }
+
+  /* ===== 头部 ===== */
+  .hero {
+    position: relative;
+    padding: 34px 24px 26px;
+    text-align: center;
+    background:
+      radial-gradient(120% 130% at 20% 0%, rgba(109,90,224,0.12) 0%, transparent 55%),
+      radial-gradient(120% 140% at 90% 10%, rgba(74,150,255,0.14) 0%, transparent 60%),
+      linear-gradient(180deg, #fbfaff 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .avatar-wrap {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 8px 24px rgba(91, 109, 239, 0.35);
+    background: #eef1ff;
+  }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  h1 {
+    margin: 4px 0 6px;
+    font-size: 1.7rem;
+    letter-spacing: 1px;
+    color: #1c1c26;
+  }
+  .subtitle { margin: 0 0 14px; color: var(--ink-faint); font-size: 0.95rem; }
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--violet-deep);
+    font-size: 0.83rem;
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(90,74,180,0.06);
+  }
+
+  /* ===== 区块 ===== */
+  .section { padding: 22px 24px; border-bottom: 1px solid var(--line); }
+  .section:last-of-type { border-bottom: none; }
+  .section-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--violet-deep);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title svg { width: 18px; height: 18px; flex: none; color: var(--violet); }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+    margin: 0;
+  }
+  .meta-item { display: flex; gap: 8px; font-size: 0.95rem; }
+  .meta-key { color: var(--ink-faint); flex: none; min-width: 40px; }
+  .meta-value { color: var(--ink); }
+  .meta-value.full { grid-column: 1 / -1; }
+  .para { margin: 0 0 6px; font-size: 0.95rem; }
+
+  /* 标签 */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag {
+    background: #f1eefe;
+    color: var(--violet-deep);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+
+  /* 游戏列表 */
+  .games { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .game {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+  .game:hover { border-color: #cfc7ff; background: #faf9ff; transform: translateY(-1px); }
+  .game:active { transform: translateY(0); }
+  .game-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex: none;
+    background: #c6c6d2;
+  }
+  .game-dot.active { background: #3ecf8e; }
+  .game-dot.lite   { background: #f2b544; }
+  .game-dot.dead   { background: #c6c6d2; }
+  .game-name { font-weight: 600; font-size: 0.95rem; flex: none; }
+  .game-note { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+  .game-empty { color: var(--ink-faint); font-size: 0.88rem; }
+  .game-go {
+    margin-left: auto;
+    flex: none;
+    width: 18px; height: 18px;
+    color: var(--ink-faint);
+    opacity: 0;
+    transition: opacity .18s ease, color .18s ease;
+  }
+  .game:hover .game-go { opacity: 1; color: var(--violet); }
+  @media (max-width: 520px) { .game-go { opacity: .6; } }
+  .game-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    flex: 1;
+    min-width: 0;
+  }
+  .game-main .game-note, .game-main .game-empty { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vpn-btn {
+    flex: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #7b68ee, #5b8def);
+    padding: 5px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity .18s ease, transform .18s ease, box-shadow .18s ease;
+    box-shadow: 0 2px 8px rgba(91,109,239,0.30);
+  }
+  .vpn-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(91,109,239,0.38); }
+  .games-hint { margin: 12px 2px 0; font-size: 0.82rem; color: var(--ink-faint); }
+
+  /* 雷点 */
+  .warning {
+    background: #fdf2f2;
+    border: 1px solid #f6d3d3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .warning-row { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: #b04a4a; }
+  .warning-row svg { width: 16px; height: 16px; flex: none; }
+
+  .list { margin: 0; padding: 0; list-style: none; }
+  .list li { position: relative; padding-left: 18px; font-size: 0.95rem; margin-bottom: 6px; }
+  .list li::before {
+    content: "";
+    position: absolute; left: 2px; top: 10px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--violet);
+  }
+
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    background: #fbfaff;
+  }
+  footer svg { width: 12px; height: 12px; vertical-align: -1px; }
+
+  /* 联系方式卡片 */
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fbfaff, #f3f6ff);
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .contact-card:hover { border-color: #cfc7ff; box-shadow: 0 4px 16px rgba(91,109,239,0.12); }
+  .contact-avatar {
+    flex: none;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7b68ee, #5b8def);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .contact-avatar svg { width: 26px; height: 26px; }
+  .contact-avatar.bili {
+    background: linear-gradient(135deg, #fb7299, #e04e7f);
+    box-shadow: 0 4px 12px rgba(251,114,153,0.35);
+  }
+  .contact-avatar.douyin {
+    background: linear-gradient(135deg, #25f4ee, #fe2c55);
+    box-shadow: 0 4px 12px rgba(254,44,85,0.35);
+  }
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-name { font-weight: 700; font-size: 0.98rem; color: var(--ink); }
+  .contact-desc { font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
+  .contact-link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--violet-deep);
+    background: #efeaff;
+    padding: 7px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background .18s ease, transform .18s ease;
+  }
+  .contact-link:hover { background: #e4dcff; transform: translateY(-1px); }
+  .contact-link svg { width: 14px; height: 14px; }
+
+  /* ===== 多视图 ===== */
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn .25s ease; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* 底部导航 */
+  .tabbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    z-index: 100;
+  }
+  .tabbar-inner {
+    display: flex;
+    gap: 8px;
+    max-width: 700px;
+    width: 100%;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 0 6px;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: color .18s ease, background .18s ease;
+  }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.active { color: var(--violet-deep); background: #f1eefe; font-weight: 600; }
+
+  @media (max-width: 520px) {
+    .meta-grid { grid-template-columns: 1fr; }
+    .section { padding: 20px 18px; }
+    .hero { padding: 28px 18px 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <div class="hero">
+    <div class="avatar-wrap">
+      <img src="data:image/jpeg;base64,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" alt="小夜的头像" />
+    </div>
+    <h1>小夜的扩列条</h1>
+    <p class="subtitle">你好呀，欢迎来扩列</p>
+    <div class="badges">
+      <span class="badge">♋ 巨蟹座</span>
+      <span class="badge">07.10</span>
+      <span class="badge">山东 · 枣庄</span>
+    </div>
+  </div>
+
+  <!-- ===== 视图：主页 ===== -->
+  <div class="view" id="view-home">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        基本信息
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><span class="meta-key">性别</span><span class="meta-value">男</span></div>
+        <div class="meta-item"><span class="meta-key">生日</span><span class="meta-value">7.10</span></div>
+        <div class="meta-item"><span class="meta-key">星座</span><span class="meta-value">巨蟹座</span></div>
+        <div class="meta-item"><span class="meta-key">坐标</span><span class="meta-value">山东省枣庄市峄城区</span></div>
+        <div class="meta-item"><span class="meta-key">爱好</span><span class="meta-value full">折腾手机（Shizuku 可用 / Root 刷机目前不会）、数码（愿望：凑齐荣耀全家桶）、Furry</span></div>
+      </div>
+      <div class="tags">
+        <span class="tag">温柔</span>
+        <span class="tag">善良（？）</span>
+        <span class="tag">玻璃心</span>
+        <span class="tag">Furry</span>
+        <span class="tag">数码控</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/></svg>
+        性格
+      </div>
+      <p class="para">温柔、善良（？）、玻璃心</p>
+    </div>
+  </div>
+
+  <!-- ===== 视图：游戏 ===== -->
+  <div class="view" id="view-games">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M9 10l4 2-4 2z"/></svg>
+        游戏列表
+      </div>
+      <div class="games">
+        <a class="game" href="https://bs.qq.com/m/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">荒野乱斗</span><span class="game-note">这款游戏也是真的太好玩了</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://cr.qq.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">皇室战争</span><span class="game-note">同上</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://delta.qq.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">三角洲行动</span><span class="game-note">实在是太好玩了，不知道爆率高不高</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://rocom.qq.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">洛克王国世界</span><span class="game-note">也是可以</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://codm.qq.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">使命召唤手游</span><span class="game-note">使命"新手"</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://nfsm.qq.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">极品飞车 集结</span><span class="game-note">微活</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://cfm.qq.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">穿越火线枪战王者</span><span class="game-note">手感不怎么样</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://naruto.qq.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">火影</span><span class="game-note">最近好像没玩</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://www.mini1.cn/" target="_blank" rel="noopener"><span class="game-dot dead"></span><span class="game-name">迷你</span><span class="game-note">中立玩家，不要因为玩我的世界和迷你引战</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <div class="game"><a class="game-main" href="https://www.roblox.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">罗布乐思</span><span class="game-note">反正就挺好玩的好像？（需VPN）</span></a><a class="vpn-btn" href="https://111pan.cn/s/eDKu7" target="_blank" rel="noopener">下载VPN</a></div>
+        <div class="game"><a class="game-main" href="https://store.steampowered.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">Steam</span><span class="game-note">用15玩的（需VPN）</span></a><a class="vpn-btn" href="https://111pan.cn/s/eDKu7" target="_blank" rel="noopener">下载VPN</a></div>
+        <a class="game" href="https://egg.163.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">蛋仔</span><span class="game-note">目前两个号：哔哩哔哩服（煤炭Owo 推荐加这个）/ 官服（黎夜furry）</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://mc.163.com/" target="_blank" rel="noopener"><span class="game-dot active"></span><span class="game-name">我的世界（基岩/网易）</span><span class="game-note">喜欢加各种资源包，纯生存也可以</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://yys.163.com/" target="_blank" rel="noopener"><span class="game-dot dead"></span><span class="game-name">阴阳师</span><span class="game-note">淡游，注销账号了</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://speed.163.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">巅峰极速</span><span class="game-note">等网易什么时候把安装包内存降下来再说</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://wotb.163.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">坦闪</span><span class="game-empty">偶尔玩</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://sky.163.com/" target="_blank" rel="noopener"><span class="game-dot lite"></span><span class="game-name">光遇</span><span class="game-empty">偶尔玩</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://pokemon.qq.com/" target="_blank" rel="noopener"><span class="game-dot dead"></span><span class="game-name">宝可梦大集结</span><span class="game-note">感觉有点不好玩</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <a class="game" href="https://phira.gl/" target="_blank" rel="noopener"><span class="game-dot dead"></span><span class="game-name">音游（phira / mlitnm）</span><span class="game-note">说实话，有点不好玩</span><svg class="game-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg></a>
+        <div class="game"><span class="game-dot lite"></span><span class="game-name">云电脑</span><span class="game-empty">工具类</span><a class="vpn-btn" href="https://cn.bing.com/search?q=云电脑&setmkt=zh-CN&PC=EMMX01&form=LWS002&scope=web" target="_blank" rel="noopener">搜索</a></div>
+      </div>
+      <p class="games-hint">● 常玩　● 偶尔　● 淡游 / 弃坑　·　点击游戏名跳转官网，部分需 VPN</p>
+    </div>
+  </div>
+
+  <!-- ===== 视图：避雷 ===== -->
+  <div class="view" id="view-avoid">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>
+        雷点
+      </div>
+      <div class="warning">
+        <div class="warning-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 4.2L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 10v4"/><path d="M12 17.5v.5"/></svg>
+          阴阳人
+        </div>
+        <div class="warning-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 4.2L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 10v4"/><path d="M12 17.5v.5"/></svg>
+          聊 h
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        你可能雷
+      </div>
+      <ul class="list">
+        <li>多次发动态 / 无意义动态</li>
+        <li>消息不回</li>
+        <li>躺列</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== 视图：联系方式 ===== -->
+  <div class="view" id="view-contact">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
+        联系方式
+      </div>
+      <div class="contact-card">
+        <div class="contact-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/><path d="M9 11a3 3 0 0 1 6 0c0 2-3 3.5-3 3.5S9 13 9 11z"/></svg>
+        </div>
+        <div class="contact-info">
+          <div class="contact-name">小夜 · 兽频道</div>
+          <div class="contact-desc">欢迎来我的兽频道逛逛，扩列走这里～</div>
+        </div>
+        <a class="contact-link" href="https://fursuit.tv/@LTxiaoye" target="_blank" rel="noopener">
+          去看看
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+        </a>
+      </div>
+      <div class="contact-card" style="margin-top:10px;">
+        <div class="contact-avatar douyin">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 3c.4 2.3 1.7 3.6 4 3.9v2.5c-1.6 0-2.9-.4-4-1.1v5.9c0 4.6-3.4 7.8-7.5 7.8-3.3 0-6.2-2.2-6.2-5.4 0-2.9 2.3-5.2 5.2-5.2 1 0 1.9.3 2.7.8v2.9c-.8-.5-1.7-.7-2.7-.7-1.4 0-2.5 1-2.5 2.4 0 1.4 1.1 2.5 2.5 2.5 2.5 0 3.5-2.1 3.5-5V3h3.5z"/></svg>
+        </div>
+        <div class="contact-info">
+          <div class="contact-name">抖音 · LT_小夜</div>
+          <div class="contact-desc">抖音号 moyeawa · 一只巧克力味的小狼</div>
+        </div>
+        <a class="contact-link" href="https://www.iesdouyin.com/share/user/MS4wLjABAAAAk6FvSte4YQErTKFjDDpiseroaY5s8DvQ7o1i74LgioU?u_code=340eg2ajcfk&did=MS4wLjABAAAAmCxo6zc3XpeyKzMz750l1Q11uNxBKMQ4KSA9M2Gg6mKRKY2CDGV7LnsYjr0P_QeT&iid=MS4wLjABAAAAw1ThNqkOWShbib0kdSYUcv0cmd1JIaj0_4dd3BJ0ODlLkQACMy85NbshNsAJt6Q3&with_sec_did=1&sec_uid=MS4wLjABAAAAk6FvSte4YQErTKFjDDpiseroaY5s8DvQ7o1i74LgioU&from_ssr=1&from_aid=1128&timestamp=1788914187&utm_source=copy&utm_campaign=client_share&utm_medium=android&app=aweme&ug_share_id=61963a3082377_1788914189403&activity_info=%7B%22social_author_id%22%3A%22131534196326263%22%2C%22social_share_id%22%3A%22131534196326263_1788914184869%22%2C%22social_share_time%22%3A%221788914187%22%2C%22social_share_user_id%22%3A%22131534196326263%22%7D" target="_blank" rel="noopener">
+          去看看
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+        </a>
+      </div>
+      <div class="contact-card" style="margin-top:10px;">
+        <div class="contact-avatar bili">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 3l2 4M16 3l-2 4"/><path d="M10 12l4 2.5-4 2.5z"/></svg>
+        </div>
+        <div class="contact-info">
+          <div class="contact-name">B站 · 小夜</div>
+          <div class="contact-desc">关注我的B站，看看我的动态～</div>
+        </div>
+        <a class="contact-link" href="https://m.bilibili.com/space/3493138087807409?plat_id=1&share_from=space&share_medium=android&share_plat=android&share_session_id=2b0fa51e-8a28-4a88-be62-f4625e4462fa&share_source=COPY&share_tag=s_i&timestamp=1789087177&unique_k=J7bEpoj" target="_blank" rel="noopener">
+          去看看
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>
+        </a>
+      </div>
+      <p class="games-hint" style="margin-top:12px;">🔗 https://fursuit.tv/@LTxiaoye</p>
+    </div>
+  </div>
+
+  <footer>
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/></svg>
+    © 2026 小夜
+  </footer>
+</div>
+
+<!-- 底部导航 -->
+<div class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tab active" data-view="home" aria-label="主页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      主页
+    </button>
+    <button class="tab" data-view="games" aria-label="游戏">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M9 10l4 2-4 2z"/></svg>
+      游戏
+    </button>
+    <button class="tab" data-view="avoid" aria-label="避雷">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>
+      避雷
+    </button>
+    <button class="tab" data-view="contact" aria-label="联系方式">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
+      联系
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var views = ['home', 'games', 'avoid', 'contact'];
+  var tabs = document.querySelectorAll('.tab');
+
+  function show(view) {
+    if (views.indexOf(view) === -1) view = 'home';
+    views.forEach(function (v) {
+      var el = document.getElementById('view-' + v);
+      if (el) el.classList.toggle('active', v === view);
+    });
+    tabs.forEach(function (t) {
+      t.classList.toggle('active', t.getAttribute('data-view') === view);
+    });
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      show(t.getAttribute('data-view'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // 支持 #home / #games / #avoid 锚点
+  function fromHash() {
+    var h = window.location.hash.replace('#', '');
+    return views.indexOf(h) !== -1 ? h : 'home';
+  }
+  window.addEventListener('hashchange', function () { show(fromHash()); });
+
+  show(fromHash());
+})();
+</script>
+</body>
+</html>
