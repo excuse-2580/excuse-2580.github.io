@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#6d5ae0" />
+<title>小夜的扩列条</title>
+<style>
+  /* ===== Reset & Tokens ===== */
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --ink: #2a2a35;
+    --ink-soft: #5f5f6e;
+    --ink-faint: #9a97ab;
+    --violet: #6d5ae0;
+    --violet-deep: #4f3bbf;
+    --violet-soft: #f1eefe;
+    --bg-1: #f4f1ff;
+    --bg-2: #e9f3ff;
+    --card: #ffffff;
+    --line: #eceaf6;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --transition: .18s ease;
+
+    /* ===== 头像配置（换头像只需改这里）===== */
+    /* 方式一：用自己的图片 -> 把页面里 3 处 <img src="assets/avatar_square.jpg"> 改成你的图片 */
+    --avatar-emoji: "🐾";       /* 无图片时的 emoji 头像内容 */
+    --avatar-emoji-size: 44px;
+    --avatar-bg-1: #2a1f4e;    /* 深紫，呼应原画背景 */
+    --avatar-bg-2: #6d5ae0;
+    --avatar-ring: #ffffff;     /* 头像外环颜色 */
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    color: var(--ink);
+    line-height: 1.65;
+    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px 16px 120px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card {
+    max-width: 700px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 40px rgba(90, 74, 180, .10);
+    overflow: hidden;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    position: relative;
+    padding: 34px 24px 26px;
+    text-align: center;
+    background:
+      radial-gradient(120% 130% at 20% 0%, rgba(109,90,224,.12) 0%, transparent 55%),
+      radial-gradient(120% 140% at 90% 10%, rgba(74,150,255,.14) 0%, transparent 60%),
+      linear-gradient(180deg, #fbfaff 0%, #fff 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .avatar-wrap {
+    position: relative;
+    width: 96px; height: 96px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--avatar-ring);
+    box-shadow: 0 8px 24px rgba(91, 109, 239, .35);
+    background: #eef1ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .avatar-wrap.has-img { padding: 0; }
+  .avatar-wrap.has-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+  .avatar-wrap .avatar-fallback {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--avatar-bg-1), var(--avatar-bg-2));
+    color: #fff;
+    font-size: var(--avatar-emoji-size);
+    line-height: 1;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .avatar-wrap .avatar-fallback.is-text { font-weight: 700; font-size: calc(var(--avatar-emoji-size) * 0.9); }
+  .avatar-wrap.bump { animation: avatarBump .4s ease; }
+  @keyframes avatarBump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+  }
+
+  .hero h1 {
+    margin: 4px 0 6px;
+    font-size: 1.7rem;
+    letter-spacing: 1px;
+    color: #1c1c26;
+  }
+  .subtitle { margin: 0 0 14px; color: var(--ink-faint); font-size: .95rem; }
+  .badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--violet-deep);
+    font-size: .83rem;
+    padding: 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(90,74,180,.06);
+  }
+
+  /* ===== 区块通用 ===== */
+  .section { padding: 22px 24px; border-bottom: 1px solid var(--line); }
+  .section:last-of-type { border-bottom: none; }
+  .section-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--violet-deep);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title svg { width: 18px; height: 18px; flex: none; color: var(--violet); }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+  .meta-item { display: flex; flex-direction: column; gap: 3px; background: #f8f6ff; border-radius: var(--radius-sm); padding: 9px 12px; }
+  .meta-item.full { grid-column: 1 / -1; }
+  .meta-key { color: var(--ink-faint); font-size: .74rem; font-weight: 600; letter-spacing: .3px; }
+  .meta-value { color: var(--ink); font-size: .95rem; font-weight: 600; }
+  .meta-value.full { grid-column: 1 / -1; }
+  .para { margin: 0; font-size: .95rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .tag {
+    background: var(--violet-soft);
+    color: var(--violet-deep);
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: .88rem;
+    font-weight: 600;
+  }
+
+  /* ===== 游戏列表 ===== */
+  .games { display: flex; flex-direction: column; gap: 8px; }
+  .game {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color var(--transition), background var(--transition), transform var(--transition);
+    text-decoration: none;
+    color: inherit;
+  }
+  a.game:hover { border-color: #cfc7ff; background: #faf9ff; transform: translateY(-1px); }
+  a.game:active { transform: translateY(0); }
+  .game-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: #c6c6d2; }
+  .game-dot.active { background: #3ecf8e; box-shadow: 0 0 0 3px rgba(62,207,142,.16); }
+  .game-dot.lite   { background: #f2b544; box-shadow: 0 0 0 3px rgba(242,181,68,.16); }
+  .game-dot.dead   { background: #c6c6d2; }
+  .game-name { font-weight: 600; font-size: .93rem; flex: none; }
+  .game-note, .game-empty { color: var(--ink-soft); font-size: .85rem; line-height: 1.5; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .game-empty { color: var(--ink-faint); }
+  .game-go {
+    flex: none;
+    width: 18px; height: 18px;
+    color: var(--ink-faint);
+    opacity: 0;
+    transition: opacity var(--transition), color var(--transition);
+  }
+  a.game:hover .game-go { opacity: 1; color: var(--violet); }
+  .game-main { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; flex: 1; min-width: 0; }
+  .vpn-btn {
+    flex: none;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #7b68ee, #5b8def);
+    padding: 6px 13px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(91,109,239,.30);
+    transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+  }
+  .vpn-btn:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(91,109,239,.38); }
+  .games-hint { margin: 12px 2px 0; font-size: .8rem; color: var(--ink-faint); line-height: 1.6; }
+
+  /* VPN 下载横幅 */
+  .vpn-download {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px 15px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2a1f4e, #4f3bbf);
+    color: #fff;
+    font-size: .85rem;
+    box-shadow: 0 4px 14px rgba(74,59,191,.28);
+  }
+  .vpn-download__icon { width: 20px; height: 20px; flex: none; }
+  .vpn-download__txt { flex: 1; min-width: 0; }
+  .vpn-download__go { width: 16px; height: 16px; flex: none; opacity: .7; }
+
+  /* MC 下载按钮组 */
+  .mc-download { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .mc-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .mc-btn:active { transform: scale(.97); }
+  .mc-btn--netease { background: #e6f6ee; color: #1f7a4d; }
+  .mc-btn--global  { background: #eef1ff; color: #4c5aa8; }
+  .mc-btn__icon { width: 18px; height: 18px; flex: none; }
+
+  /* ===== 雷点 ===== */
+  .warning {
+    background: #fdf2f2;
+    border: 1px solid #f6d3d3;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .warning-row { display: flex; align-items: center; gap: 8px; font-size: .95rem; font-weight: 600; color: #b04a4a; }
+  .warning-row svg { width: 17px; height: 17px; flex: none; }
+  .list { margin: 0; padding: 0; list-style: none; }
+  .list li { position: relative; padding-left: 18px; font-size: .95rem; margin-bottom: 6px; }
+  .list li::before {
+    content: "";
+    position: absolute; left: 2px; top: 10px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--violet);
+  }
+
+  /* ===== 联系方式 ===== */
+  .contact-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fbfaff, #f3f6ff);
+  }
+  .contact-profile .contact-avatar { width: 52px; height: 52px; flex: none; }
+  .contact-profile-info { flex: 1; min-width: 0; }
+  .contact-profile-name { font-weight: 700; font-size: .98rem; color: var(--ink); }
+  .contact-profile-desc { font-size: .85rem; color: var(--ink-soft); margin-top: 2px; }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fbfaff, #f3f6ff);
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+  .contact-card:hover { border-color: #cfc7ff; box-shadow: 0 4px 16px rgba(91,109,239,.12); }
+  .contact-avatar {
+    flex: none;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7b68ee, #5b8def);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .contact-avatar svg { width: 26px; height: 26px; }
+  .contact-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .contact-avatar.douyin { background: linear-gradient(135deg, #101014, #3a3a46); }
+  .contact-avatar.bili { background: linear-gradient(135deg, #fb7299, #e04e7f); box-shadow: 0 4px 12px rgba(251,114,153,.35); }
+  .contact-info { flex: 1; min-width: 0; }
+  .contact-name { font-weight: 700; font-size: .96rem; color: var(--ink); }
+  .contact-desc { font-size: .84rem; color: var(--ink-soft); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .contact-link {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--violet-deep);
+    background: #efeaff;
+    padding: 7px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: background var(--transition), transform var(--transition);
+  }
+  .contact-link:hover { background: #e4dcff; transform: translateY(-1px); }
+  .contact-link svg { width: 14px; height: 14px; }
+
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: .8rem;
+    color: var(--ink-faint);
+    background: #fbfaff;
+  }
+  footer svg { width: 12px; height: 12px; vertical-align: -1px; color: #f085b3; }
+
+  /* ===== 多视图 ===== */
+  .view { display: none; }
+  .view.active { display: block; animation: viewIn .25s ease; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ===== 底部导航 ===== */
+  .tabbar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    z-index: 130;
+  }
+  .tabbar-inner { display: flex; gap: 8px; max-width: 700px; width: 100%; }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 0 6px;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-size: .78rem;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: color var(--transition), background var(--transition);
+  }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.active { color: var(--violet-deep); background: var(--violet-soft); font-weight: 600; }
+
+  /* ===== 爪子按钮（可拖拽）===== */
+  .paw-btn {
+    position: fixed;
+    left: 50%;
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: 58px; height: 58px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 140;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6d5ae0 0%, #4f3bbf 100%);
+    box-shadow: 0 6px 22px rgba(109,90,224,.45);
+    transition: box-shadow .2s ease;
+    padding: 0;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .paw-btn.dragging { cursor: grabbing; transition: none; box-shadow: 0 10px 30px rgba(109,90,224,.6); }
+  .paw-btn:active { box-shadow: 0 4px 16px rgba(109,90,224,.5); }
+  .paw-btn svg { width: 30px; height: 30px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.2)); pointer-events: none; }
+
+  /* ===== 聊天窗 ===== */
+  .chat-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30,26,58,.42);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    padding: 16px;
+  }
+  .chat-overlay.open { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .chat-box {
+    width: 100%;
+    max-width: 460px;
+    height: min(75vh, 620px);
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    animation: chatUp .3s cubic-bezier(.2,.8,.3,1.2);
+  }
+  @keyframes chatUp { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: none; } }
+
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #6d5ae0, #4f3bbf);
+    color: #fff;
+    flex: none;
+  }
+  .chat-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    overflow: hidden;
+  }
+  .chat-avatar svg { width: 22px; height: 22px; }
+  .chat-avatar .avatar-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.2);
+    font-size: 20px; line-height: 1; user-select: none;
+  }
+  .chat-avatar.has-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .chat-title { flex: 1; min-width: 0; }
+  .chat-title .name { font-weight: 700; font-size: .98rem; }
+  .chat-title .sub { font-size: .75rem; opacity: .85; }
+  .chat-close {
+    width: 32px; height: 32px;
+    border: none;
+    background: rgba(255,255,255,.2);
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition);
+  }
+  .chat-close:hover { background: rgba(255,255,255,.35); }
+
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f7f5ff;
+    overscroll-behavior: contain;
+  }
+  .msg {
+    max-width: 82%;
+    padding: 9px 13px;
+    font-size: .9rem;
+    line-height: 1.6;
+    border-radius: 14px;
+    word-break: break-word;
+    align-self: flex-end;
+    background: var(--violet);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    animation: msgIn .25s ease;
+  }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .chat-input-wrap { flex: none; border-top: 1px solid var(--line); background: #fff; }
+  .chat-hint { text-align: center; font-size: .72rem; color: var(--ink-faint); padding: 4px 0 0; }
+  .chat-input { display: flex; gap: 8px; padding: 11px 12px calc(11px + env(safe-area-inset-bottom)); }
+  .chat-input input {
+    flex: 1;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 9px 15px;
+    font-size: .9rem;
+    font-family: inherit;
+    color: var(--ink);
+    outline: none;
+    transition: border-color var(--transition);
+    min-width: 0;
+    background: #fbfaff;
+  }
+  .chat-input input:focus { border-color: var(--violet); background: #fff; }
+  .chat-input button {
+    flex: none;
+    width: 42px; height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: var(--violet);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), transform .15s ease;
+  }
+  .chat-input button:hover { background: var(--violet-deep); }
+  .chat-input button:active { transform: scale(.94); }
+  .chat-input button svg { width: 20px; height: 20px; }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 520px) {
+    .meta-grid { grid-template-columns: 1fr; }
+    .section { padding: 20px 18px; }
+    .hero { padding: 28px 18px 22px; }
+    .mc-download { grid-template-columns: 1fr; }
+    .game-go { opacity: .6; }
+    a.game:hover .game-go { opacity: 1; }
+  }
+
+  /* ===== SVG Sprite（隐藏）===== */
+  .svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* ===== 无障碍：减少动效 ===== */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="svg-sprite" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 4.2L2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 10v4"/><path d="M12 17.5v.5"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></symbol>
+</svg>
+
+<div class="card">
+
+  <div class="hero">
+    <div class="avatar-wrap" id="heroAvatar"><img src="assets/avatar_square.jpg" alt="小夜的头像" /></div>
+    <h1>小夜的扩列条</h1>
+    <p class="subtitle">你好呀，欢迎来扩列</p>
+    <div class="badges">
+      <span class="badge">♋ 巨蟹座</span>
+      <span class="badge">07.10</span>
+      <span class="badge">山东 · 枣庄</span>
+    </div>
+  </div>
+
+  <!-- ===== 视图：主页 ===== -->
+  <div class="view" id="view-home">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        基本信息
+      </div>
+      <div class="meta-grid">
+        <div class="meta-item"><span class="meta-key">性别</span><span class="meta-value">男</span></div>
+        <div class="meta-item"><span class="meta-key">生日</span><span class="meta-value">7.10</span></div>
+        <div class="meta-item"><span class="meta-key">星座</span><span class="meta-value">巨蟹座</span></div>
+        <div class="meta-item"><span class="meta-key">坐标</span><span class="meta-value">山东省枣庄市峄城区</span></div>
+        <div class="meta-item full"><span class="meta-key">爱好</span><span class="meta-value">折腾手机（Shizuku 可用 / Root 刷机目前不会）、数码（愿望：凑齐荣耀全家桶）、Furry</span></div>
+      </div>
+      <div class="tags">
+        <span class="tag">温柔</span>
+        <span class="tag">善良（？）</span>
+        <span class="tag">玻璃心</span>
+        <span class="tag">Furry</span>
+        <span class="tag">数码控</span>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/></svg>
+        性格
+      </div>
+      <p class="para">温柔、善良（？）、玻璃心</p>
+    </div>
+  </div>
+
+  <!-- ===== 视图：游戏 ===== -->
+  <div class="view" id="view-games">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M9 10l4 2-4 2z"/></svg>
+        游戏列表
+      </div>
+      <div class="games" id="gameList"></div>
+      <p class="games-hint">● 常玩　● 偶尔　● 淡游 / 弃坑　·　点击游戏名跳转官网，部分需 VPN</p>
+    </div>
+  </div>
+
+  <!-- ===== 视图：避雷 ===== -->
+  <div class="view" id="view-avoid">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>
+        雷点
+      </div>
+      <div class="warning">
+        <div class="warning-row"><svg><use href="#i-warn"/></svg>阴阳人</div>
+        <div class="warning-row"><svg><use href="#i-warn"/></svg>聊 h</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        你可能雷
+      </div>
+      <ul class="list">
+        <li>多次发动态 / 无意义动态</li>
+        <li>消息不回</li>
+        <li>躺列</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ===== 视图：联系方式 ===== -->
+  <div class="view" id="view-contact">
+    <div class="section">
+      <div class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
+        联系方式
+      </div>
+      <div class="contact-profile">
+        <div class="contact-avatar" id="contactAvatar"><img src="assets/avatar_square.jpg" alt="小夜的头像" /></div>
+        <div class="contact-profile-info">
+          <div class="contact-profile-name">小夜的扩列条</div>
+          <div class="contact-profile-desc">你好呀，欢迎来扩列 🐾</div>
+        </div>
+      </div>
+      <div class="tags" style="margin-top:12px;">
+        <span class="tag">巨蟹座</span>
+        <span class="tag">07.10</span>
+        <span class="tag">山东 · 枣庄</span>
+      </div>
+      <div id="contactList"></div>
+      <p class="games-hint" style="margin-top:12px;">🔗 https://fursuit.tv/@LTxiaoye</p>
+    </div>
+  </div>
+
+  <footer>
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/></svg>
+    © 2026 小夜
+  </footer>
+</div>
+
+<button class="paw-btn" id="pawBtn" aria-label="打开聊天">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <ellipse cx="12" cy="14" rx="5.2" ry="5.6" fill="#fff"/>
+    <circle cx="6.2" cy="6.5" r="1.9" fill="#fff"/>
+    <circle cx="9.2" cy="3.6" r="1.9" fill="#fff"/>
+    <circle cx="14.8" cy="3.6" r="1.9" fill="#fff"/>
+    <circle cx="17.8" cy="6.5" r="1.9" fill="#fff"/>
+    <ellipse cx="9.3" cy="15.2" rx="1.4" ry="1.9" fill="#6d5ae0"/>
+    <ellipse cx="14.7" cy="15.2" rx="1.4" ry="1.9" fill="#6d5ae0"/>
+  </svg>
+</button>
+
+<div class="chat-overlay" id="chatOverlay">
+  <div class="chat-box">
+    <div class="chat-header">
+      <div class="chat-avatar" id="chatAvatar"><img src="assets/avatar_square.jpg" alt="小夜的头像" /></div>
+      <div class="chat-title">
+        <div class="name">留言板</div>
+      </div>
+      <button class="chat-close" id="chatClose" aria-label="关闭">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input-wrap">
+      <div class="chat-hint">留言板 · 本地保存，刷新不丢</div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="说点什么…" autocomplete="off" />
+        <button id="chatSend" aria-label="发送">
+          <svg><use href="#i-send"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tab active" data-view="home" aria-label="主页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+      主页
+    </button>
+    <button class="tab" data-view="games" aria-label="游戏">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M9 10l4 2-4 2z"/></svg>
+      游戏
+    </button>
+    <button class="tab" data-view="avoid" aria-label="避雷">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M4.9 4.9l14.2 14.2"/></svg>
+      避雷
+    </button>
+    <button class="tab" data-view="contact" aria-label="联系方式">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/></svg>
+      联系
+    </button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===== DOM 缓存 =====
+  const $ = (id) => document.getElementById(id);
+  const gameList   = $('gameList');
+  const contactList = $('contactList');
+  const heroAvatar  = $('heroAvatar');
+  const contactAvatar = $('contactAvatar');
+  const chatAvatar  = $('chatAvatar');
+  const overlay     = $('chatOverlay');
+  const body        = $('chatBody');
+  const input       = $('chatInput');
+  const btnSend     = $('chatSend');
+  const btnClose    = $('chatClose');
+  const btnPaw      = $('pawBtn');
+
+  // ===== 工具：HTML 转义 =====
+  const ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ESCAPE_MAP[c]);
+
+  // ===== 数据驱动：游戏列表 =====
+  const VPN_URL = 'https://111pan.cn/s/eDKu7';
+  const ICON_DOWNLOAD = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l4 4h-3v6h-2V7H8z"/><path d="M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2"/><path d="M12 12v7"/></svg>';
+  const ICON_TREND_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-3.4L7 15.3"/></svg>';
+  const ICON_ARROW_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>';
+
+  const GAMES = [
+    { name: '荒野乱斗',       dot: 'active', url: 'https://bs.qq.com/m/',        note: '这款游戏也是真的太好玩了' },
+    { name: '皇室战争',       dot: 'active', url: 'https://cr.qq.com/',         note: '同上' },
+    { name: '三角洲行动',     dot: 'active', url: 'https://delta.qq.com/',      note: '实在是太好玩了，不知道爆率高不高' },
+    { name: '洛克王国世界',   dot: 'active', url: 'https://rocom.qq.com/',      note: '也是可以' },
+    { name: '使命召唤手游',   dot: 'lite',   url: 'https://codm.qq.com/',       note: '使命"新手"' },
+    { name: '极品飞车 集结',  dot: 'lite',   url: 'https://nfsm.qq.com/',       note: '微活' },
+    { name: '穿越火线枪战王者', dot: 'lite',  url: 'https://cfm.qq.com/',        note: '手感不怎么样' },
+    { name: '火影',           dot: 'lite',   url: 'https://naruto.qq.com/',     note: '最近好像没玩' },
+    { name: '迷你',           dot: 'dead',   url: 'https://www.mini1.cn/',      note: '中立玩家，不要因为玩我的世界和迷你引战' },
+    { name: '罗布乐思',       dot: 'active', url: 'https://www.roblox.com/',    note: '反正就挺好玩的好像？（需VPN）', wrap: true, vpn: true },
+    { name: 'Steam',          dot: 'lite',   url: 'https://store.steampowered.com/', note: '用15玩的（需VPN）', wrap: true, vpn: true },
+    { name: '音游（phira / mlitnm）', dot: 'dead', url: 'https://phira.gl/',     note: '说实话，有点不好玩' },
+    { name: '云电脑',         dot: 'lite',   url: null,                          note: '工具类', search: '云电脑' },
+    { name: '蛋仔',           dot: 'active', url: 'https://egg.163.com/',       note: '目前两个号：哔哩哔哩服（煤炭Owo 推荐加这个）/ 官服（黎夜furry）' },
+    { name: '我的世界（基岩/网易）', dot: 'active', url: 'https://mc.163.com/',  note: '喜欢加各种资源包，纯生存也可以' },
+    { name: '阴阳师',         dot: 'dead',   url: 'https://yys.163.com/',       note: '淡游，注销账号了' },
+    { name: '巅峰极速',       dot: 'lite',   url: 'https://speed.163.com/',     note: '等网易什么时候把安装包内存降下来再说' },
+    { name: '坦闪',           dot: 'lite',   url: 'https://wotb.163.com/',      note: '偶尔玩' },
+    { name: '光遇',           dot: 'lite',   url: 'https://sky.163.com/',       note: '偶尔玩' },
+    { name: '宝可梦大集结',   dot: 'dead',   url: 'https://pokemon.qq.com/',    note: '感觉有点不好玩' }
+  ];
+
+  // ===== 数据驱动：联系方式 =====
+  const CONTACTS = [
+    { type: '',        name: '小夜 · 兽频道', desc: '欢迎来我的兽频道逛逛，扩列走这里～', url: 'https://fursuit.tv/@LTxiaoye' },
+    { type: 'douyin',  name: '抖音 · LT_小夜', desc: '抖音号 moyeawa · 一只巧克力味的小狼', url: 'https://www.iesdouyin.com/share/user/MS4wLjABAAAAk6FvSte4YQErTKFjDDpiseroaY5s8DvQ7o1i74LgioU?u_code=340eg2ajcfk&did=MS4wLjABAAAAmCxo6zc3XpeyKzMz750l1Q11uNxBKMQ4KSA9M2Gg6mKRKY2CDGV7LnsYjr0P_QeT&iid=MS4wLjABAAAAw1ThNqkOWShbib0kdSYUcv0cmd1JIaj0_4dd3BJ0ODlLkQACMy85NbshNsAJt6Q3&with_sec_did=1&sec_uid=MS4wLjABAAAAk6FvSte4YQErTKFjDDpiseroaY5s8DvQ7o1i74LgioU&from_ssr=1&from_aid=1128&timestamp=1788914187&utm_source=copy&utm_campaign=client_share&utm_medium=android&app=aweme&ug_share_id=61963a3082377_1788914189403&activity_info=%7B%22social_author_id%22%3A%22131534196326263%22%2C%22social_share_id%22%3A%22131534196326263_1788914184869%22%2C%22social_share_time%22%3A%221788914187%22%2C%22social_share_user_id%22%3A%22131534196326263%22%7D' },
+    { type: 'bili',    name: 'B站 · 小夜',    desc: '关注我的B站，看看我的动态～', url: 'https://m.bilibili.com/space/3493138087807409?plat_id=1&share_from=space&share_medium=android&share_plat=android&share_session_id=2b0fa51e-8a28-4a88-be62-f4625e4462fa&share_source=COPY&share_tag=s_i&timestamp=1789087177&unique_k=J7bEpoj' }
+  ];
+
+  // ===== 渲染游戏列表 =====
+  function renderGames() {
+    if (!gameList) return;
+    gameList.innerHTML = GAMES.map((g) => {
+      const inner = `
+        <span class="game-dot ${g.dot}"></span>
+        <span class="game-name">${escapeHtml(g.name)}</span>
+        <span class="${g.note ? 'game-note' : 'game-empty'}">${escapeHtml(g.note || '')}</span>`;
+
+      if (g.search) {
+        return `<div class="game">${inner}
+          <a class="vpn-btn" href="https://cn.bing.com/search?q=${encodeURIComponent(g.search)}&setmkt=zh-CN&PC=EMMX01&form=LWS002&scope=web" target="_blank" rel="noopener">搜索</a></div>`;
+      }
+      if (g.wrap) {
+        return `<div class="game">
+          <a class="game-main" href="${g.url}" target="_blank" rel="noopener">${inner}</a>
+          ${g.vpn ? `<a class="vpn-btn" href="${VPN_URL}" target="_blank" rel="noopener">下载VPN</a>` : ''}
+        </div>`;
+      }
+      return `<a class="game" href="${g.url}" target="_blank" rel="noopener">${inner}
+        <svg class="game-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>`;
+    }).join('') + `
+      <a class="vpn-btn vpn-download" href="${VPN_URL}" target="_blank" rel="noopener">
+        ${ICON_DOWNLOAD}
+        <span class="vpn-download__txt">下载VPN（罗布乐思 / Steam 要用）</span>
+        <svg class="vpn-download__go" aria-hidden="true"><use href="#i-arrow"/></svg>
+      </a>
+      <div class="mc-download">
+        <a class="mc-btn mc-btn--netease" href="https://mc.163.com/" target="_blank" rel="noopener">
+          ${ICON_TREND_UP}<span class="mc-btn__txt">网易版下载</span>
+        </a>
+        <a class="mc-btn mc-btn--global" href="https://bbk.endyun.ltd/main" target="_blank" rel="noopener">
+          ${ICON_ARROW_DOWN}<span class="mc-btn__txt">国际基岩版下载</span>
+        </a>
+      </div>`;
+  }
+
+  // ===== 渲染联系方式 =====
+  function contactIconSvg(kind) {
+    if (kind === 'douyin') {
+      return '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 3c.4 2.3 1.7 3.6 4 3.9v2.5c-1.6 0-2.9-.4-4-1.1v5.9c0 4.6-3.4 7.8-7.5 7.8-3.3 0-6.2-2.2-6.2-5.4 0-2.9 2.3-5.2 5.2-5.2 1 0 1.9.3 2.7.8v2.9c-.8-.5-1.7-.7-2.7-.7-1.4 0-2.5 1-2.5 2.4 0 1.4 1.1 2.5 2.5 2.5 2.5 0 3.5-2.1 3.5-5V3h3.5z"/></svg>';
+    }
+    if (kind === 'bili') {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 3l2 4M16 3l-2 4"/><path d="M10 12l4 2.5-4 2.5z"/></svg>';
+    }
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-8-4.5-8-11a4 4 0 0 1 7-2.6A4 4 0 0 1 20 10c0 6.5-8 11-8 11z"/><path d="M9 11a3 3 0 0 1 6 0c0 2-3 3.5-3 3.5S9 13 9 11z"/></svg>';
+  }
+
+  function renderContacts() {
+    if (!contactList) return;
+    contactList.innerHTML = CONTACTS.map((c, i) => `
+      <div class="contact-card"${i > 0 ? ' style="margin-top:10px;"' : ''}>
+        <div class="contact-avatar ${c.type}">${contactIconSvg(c.type || 'heart')}</div>
+        <div class="contact-info">
+          <div class="contact-name">${escapeHtml(c.name)}</div>
+          <div class="contact-desc">${escapeHtml(c.desc)}</div>
+        </div>
+        <a class="contact-link" href="${c.url}" target="_blank" rel="noopener">
+          去看看
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </a>
+      </div>`).join('');
+  }
+
+  // ===== 多视图切换 =====
+  const views = ['home', 'games', 'avoid', 'contact'];
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+
+  function show(view) {
+    if (!views.includes(view)) view = 'home';
+    views.forEach((v) => {
+      const el = $(`view-${v}`);
+      if (el) el.classList.toggle('active', v === view);
+    });
+    tabs.forEach((t) => t.classList.toggle('active', t.dataset.view === view));
+  }
+
+  tabs.forEach((t) => {
+    t.addEventListener('click', () => {
+      show(t.dataset.view);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  function fromHash() {
+    const h = window.location.hash.replace('#', '');
+    return views.includes(h) ? h : 'home';
+  }
+  window.addEventListener('hashchange', () => show(fromHash()));
+
+  // ===== 头像渲染（主页 / 联系页 / 聊天窗 三处共用）=====
+  const AVATAR_IMG   = '';
+  const AVATAR_EMOJI = '🐾';
+  const AVATAR_TEXT  = '';
+
+  function renderAvatar(el) {
+    if (!el) return;
+    const hasImg = AVATAR_IMG || el.querySelector('img');
+    el.classList.toggle('has-img', !!hasImg);
+    if (!hasImg) {
+      const content = AVATAR_TEXT || AVATAR_EMOJI;
+      const cls = AVATAR_TEXT ? 'avatar-fallback is-text' : 'avatar-fallback';
+      el.innerHTML = `<div class="${cls}">${content}</div>`;
+    }
+  }
+  function renderAllAvatars() {
+    renderAvatar(heroAvatar);
+    renderAvatar(contactAvatar);
+    renderAvatar(chatAvatar);
+  }
+  renderAllAvatars();
+
+  // 点击主页头像 → 随机换一个表情（仅 emoji 模式生效，小彩蛋）
+  const AVATAR_POOL = ['🐾', '🐺', '🦊', '🐱', '🌙', '✨', '🍫'];
+  let avIdx = 0;
+  if (heroAvatar && !AVATAR_IMG && !AVATAR_TEXT && !heroAvatar.querySelector('img')) {
+    heroAvatar.style.cursor = 'pointer';
+    heroAvatar.addEventListener('click', () => {
+      avIdx = (avIdx + 1) % AVATAR_POOL.length;
+      // AVATAR_EMOJI 是 const，通过修改 DOM 实现切换
+      heroAvatar.innerHTML = `<div class="avatar-fallback">${AVATAR_POOL[avIdx]}</div>`;
+      heroAvatar.classList.remove('bump');
+      void heroAvatar.offsetWidth;
+      heroAvatar.classList.add('bump');
+    });
+  }
+
+  show(fromHash());
+
+  // ===== 聊天：纯留言板（无自动回复，记录持久化）=====
+  const STORAGE_CHAT = 'chatMessages';
+  let initialized = false;
+
+  // 追加一条消息到界面
+  function addMsg(text) {
+    const div = document.createElement('div');
+    div.className = 'msg';
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  // 从 localStorage 恢复记录
+  function restoreMessages() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_CHAT) || '[]');
+      if (Array.isArray(saved)) saved.forEach((m) => addMsg(m.text));
+    } catch (e) {}
+    initialized = true;
+  }
+
+  // 保存单条消息
+  function saveMsg(text) {
+    let saved = [];
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_CHAT) || '[]'); } catch (e) {}
+    saved.push({ text });
+    // 限制最多保留 100 条，避免无限增长
+    if (saved.length > 100) saved = saved.slice(saved.length - 100);
+    try { localStorage.setItem(STORAGE_CHAT, JSON.stringify(saved)); } catch (e) {}
+  }
+
+  function openChat() {
+    overlay.classList.add('open');
+    if (!initialized) restoreMessages();
+    setTimeout(() => input.focus(), 100);
+  }
+  function closeChat() { overlay.classList.remove('open'); }
+
+  function send() {
+    const val = input.value.trim();
+    if (!val) return;
+    addMsg(val);
+    saveMsg(val);
+    input.value = '';
+  }
+
+  // ===== 爪子按钮：拖拽 + 位置记忆（pointer events 统一鼠标/触摸）=====
+  const PAW_POS = 'pawPos';
+  let pos = { left: null, top: null };
+  try { const saved = localStorage.getItem(PAW_POS); if (saved) pos = JSON.parse(saved) || pos; } catch (e) {}
+
+  function applyPos() {
+    if (pos.left != null && pos.top != null) {
+      btnPaw.style.left = pos.left + '%';
+      btnPaw.style.top = pos.top + '%';
+      btnPaw.style.bottom = 'auto';
+      btnPaw.style.transform = 'none';
+    }
+  }
+  applyPos();
+
+  let dragMoved = false;
+  let startX, startY, startLeft, startTop, btnRect;
+
+  btnPaw.addEventListener('pointerdown', (e) => {
+    if (overlay.classList.contains('open')) return;
+    btnRect = btnPaw.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    startLeft = btnRect.left; startTop = btnRect.top;
+    dragMoved = false;
+    btnPaw.classList.add('dragging');
+    btnPaw.setPointerCapture(e.pointerId);
+  });
+
+  btnPaw.addEventListener('pointermove', (e) => {
+    if (!btnPaw.classList.contains('dragging')) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragMoved = true;
+    const W = window.innerWidth, H = window.innerHeight;
+    const newLeft = Math.min(Math.max(startLeft + dx, 0), W - btnRect.width);
+    const newTop  = Math.min(Math.max(startTop + dy, 0), H - btnRect.height);
+    btnPaw.style.left = newLeft + 'px';
+    btnPaw.style.top  = newTop + 'px';
+    btnPaw.style.bottom = 'auto';
+    btnPaw.style.transform = 'none';
+  });
+
+  btnPaw.addEventListener('pointerup', () => {
+    if (!btnPaw.classList.contains('dragging')) return;
+    btnPaw.classList.remove('dragging');
+    const rect = btnPaw.getBoundingClientRect();
+    pos.left = +(((rect.left + rect.width / 2) / window.innerWidth) * 100).toFixed(2);
+    pos.top  = +(((rect.top + rect.height / 2) / window.innerHeight) * 100).toFixed(2);
+    try { localStorage.setItem(PAW_POS, JSON.stringify(pos)); } catch (e) {}
+  });
+
+  btnPaw.addEventListener('click', (e) => {
+    if (dragMoved) { e.preventDefault(); e.stopPropagation(); dragMoved = false; return; }
+    openChat();
+  });
+
+  window.addEventListener('resize', () => {
+    if (pos.left == null) return;
+    pos.left = +Math.min(Math.max(pos.left, 8), 92).toFixed(2);
+    pos.top  = +Math.min(Math.max(pos.top, 8), 92).toFixed(2);
+    btnPaw.style.left = pos.left + '%';
+    btnPaw.style.top  = pos.top + '%';
+  });
+
+  // ===== 事件绑定 =====
+  btnClose.addEventListener('click', closeChat);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeChat(); });
+  btnSend.addEventListener('click', send);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeChat(); });
+
+  // ===== 初始化 =====
+  renderGames();
+  renderContacts();
+})();
+</script>
+</body>
+</html>
